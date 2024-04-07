@@ -27,7 +27,7 @@ FILTERED_BARCODES="${SAMPLE_DIR}/filtered_barcodes.tsv"
 
 #'-b''-n''-s''-r'
 #args.barcodes_tsv, args.n_samples, args.output_dir_samples, args.output_dir_remainders
-python3 sample_200 -b "${FILTERED_BARCODES}" -n ${LOOP_RUNS} -s "${SAMPLE_DIR}/sample_200" -r "${SAMPLE_DIR}/sample_remainder"
+python3 sample_200.py -b "${FILTERED_BARCODES}" -n ${LOOP_RUNS} -s "${SAMPLE_DIR}/sample_200" -r "${SAMPLE_DIR}/sample_remainder"
 
 R preprocess_sc3.R
 ## FUTURE USE CASE BE LIKE (given template_structure.yaml and initialize_directories.sh system)
