@@ -2,7 +2,7 @@
 
 TEMPLATE_FILE="template_structure.yaml"  # The path must be correct
 RUNS_DIR="./runs"
-RUN_ID="$1"
+RUN_ID="$1" #I believe this takes param
 
 # Function to create directories based on the template
 create_directories() {
