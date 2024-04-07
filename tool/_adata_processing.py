@@ -68,3 +68,24 @@ def preprocess_and_merge_adatas(adatas):
     # Merge the AnnData objects into one
     adata_combined = adatas[0].concatenate(adatas[1:], batch_key='batch')
     return adata_combined
+
+
+
+
+# Directly read the barcodes from the .tsv file and subset the AnnData object
+def subset_anndata_from_barcodes_file(adata, barcodes_tsv_path):
+    # Read barcodes into a pandas Series (squeeze=True converts the DataFrame to a Series)
+    barcodes = pd.read_csv(barcodes_tsv_path, header=None, squeeze=True)
+
+    # Subset the AnnData object
+    return adata[adata.obs.index.isin(barcodes)].copy()
+
+
+
+
+def preprocess_adata(adata):
+    sc.pp.filter_cells(adata, min_genes=200)
+    sc.pp.filter_genes(adata, min_cells=3)
+    sc.pp.normalize_total(adata, target_sum=1e4)
+    sc.pp.log1p(adata)
+    sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
