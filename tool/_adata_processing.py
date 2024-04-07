@@ -46,13 +46,15 @@ def get_adatas_from_base_directory(base_directory):
 
     return adatas
 
-def get_adata_from_trident(trident):
-    directory = trident
+def get_adata_from_trident(trident_directory_path):
+    directory = trident_directory_path
     matrix_file = find_file(directory, 'matrix.mtx.gz')
     barcodes_file = find_file(directory, 'barcodes.tsv.gz')
     genes_file = find_file(directory, 'features.tsv.gz')
 
     adata = read_mtx_to_adata(matrix_file, genes_file, barcodes_file)
+    adata.var_names_make_unique()
+    adata.obs_names_make_unique('-') 
     return adata
 
 def preprocess_and_merge_adatas(adatas):
@@ -89,3 +91,5 @@ def preprocess_adata(adata):
     sc.pp.normalize_total(adata, target_sum=1e4)
     sc.pp.log1p(adata)
     sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
+
+    return adata

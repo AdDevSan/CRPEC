@@ -5,8 +5,9 @@ from tool import _adata_processing
 
 def main(trident_directory, h5ad_directory, filtered_barcodes_directory):
     adata = _adata_processing.get_adata_from_trident(trident_directory_path=trident_directory)
+    print("adata", adata)
     adata_processed = _adata_processing.preprocess_adata(adata)
-    
+    print(adata_processed)
     # Extract the base name for the output files from the trident directory path
     base_name = os.path.basename(trident_directory)
 

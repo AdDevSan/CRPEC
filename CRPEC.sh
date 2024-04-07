@@ -17,7 +17,7 @@ bash initialize_directories.sh "${RUN_ID}"
 
 
 #python trident_preprocess_to_h5ad_barcodes.py -t <trident_directory> -hd <h5ad_directory> -bd <filtered_barcodes_directory>
-python trident_preprocess_to_h5ad_barcodes.py -t "input/GSM4909297" -hd "${RUNS_DIR}/${RUN_ID}" -bd "${RUNS_DIR}/${RUN_ID}"
+python3 trident_preprocess_to_h5ad_barcodes.py -t "input/GSM4909297" -hd "${RUNS_DIR}/${RUN_ID}" -bd "${RUNS_DIR}/${RUN_ID}"
 
 ## FUTURE USE CASE BE LIKE (given template_structure.yaml and initialize_directories.sh system)
 ## Variables for directory paths, assume $RUN_ID is already defined and directories are created
