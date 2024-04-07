@@ -135,32 +135,9 @@ def refineClusters(adata, cluster_dictionary):
 
     
 
-def main(h5ad_file_path, barcodes_sample_200_tsv, initial_cluster_json, output_directory="refined_clusters", iteration=0):
-    # Assuming _adata_processing and refineClusters are defined elsewhere
-
-    adata_full = sc.read_h5ad(h5ad_file_path)
-    adata_200 = _adata_processing.subset_anndata_from_barcodes_file(adata_full, barcodes_sample_200_tsv)
-    
-    # REFINE CLUSTERS
-    refined_cluster = refineClusters(adata_200, initial_cluster_json)
-
-    # Ensure the output directory exists
-    os.makedirs(output_directory, exist_ok=True)
-
-    # Corrected to os.path.join
-    file_path = os.path.join(output_directory, f"refined_cluster_{iteration}.json")
-    with open(file_path, 'w') as json_file:
-        json.dump(refined_cluster, json_file, indent=4)
 
 
-
-
-
-
-
-
-
-
+#misc functions
 def file_exists(file_path):
     if not os.path.isfile(file_path):
         raise argparse.ArgumentTypeError(f"{file_path} does not exist or is not a file.")
@@ -171,27 +148,54 @@ def dir_exists(directory_path):
         raise argparse.ArgumentTypeError(f"{directory_path} does not exist or is not a directory.")
     return directory_path
 
+
+#MAIN
+
+
+
+def main(h5ad_file_path, barcodes_sample_200_tsv, initial_cluster_json, output_directory="refined_clusters", iteration=0):
+
+
+    adata_full = sc.read_h5ad(h5ad_file_path)
+    adata_200 = _adata_processing.subset_anndata_from_barcodes_file(adata_full, barcodes_sample_200_tsv)
+    
+    # REFINE CLUSTERS
+    refined_cluster = refineClusters(adata_200, initial_cluster_json)
+
+    # Ensure the output directory exists
+    os.makedirs(output_directory, exist_ok=True)
+
+
+    file_path = os.path.join(output_directory, f"refined_cluster_{iteration}.json")
+    with open(file_path, 'w') as json_file:
+        json.dump(refined_cluster, json_file, indent=4)
+
+
+
+
+#EXAMPLE USE CASE: TAKES H5AD
+#python process_sc_data.py -f path/to/data.h5ad -b path/to/barcodes_sample_200.tsv -i path/to/initial_cluster.json -o path/to/output_directory -it 1
+
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Process single-cell sequencing data.")
-    
-    # Trident directory argument with a flag
-    parser.add_argument('-td', '--trident_directory', required=True, type=dir_exists, help='Path to the trident directory containing the matrix files.')
-    
-    # Barcodes TSV file argument with a flag
-    parser.add_argument('-bc', '--barcodes_tsv', required=True, type=file_exists, help='Path to the barcodes.tsv.gz file.')
-    
-    # Initial cluster JSON file argument with a flag
-    parser.add_argument('-ic', '--initial_cluster_json', required=True, type=file_exists, help='Path to the initial cluster JSON file.')
-    
+    parser = argparse.ArgumentParser(description="Process single-cell sequencing data with subsetting and cluster refinement.")
+
+    # H5AD file argument
+    parser.add_argument('-f', '--h5ad_file_path', required=True, type=file_exists, help='Path to the .h5ad file.')
+
+    # Sampled barcodes TSV file argument
+    parser.add_argument('-b', '--barcodes_sample_200_tsv', required=True, type=file_exists, help='Path to the sampled barcodes .tsv file.')
+
+    # Initial cluster JSON file argument
+    parser.add_argument('-i', '--initial_cluster_json', required=True, type=file_exists, help='Path to the initial cluster JSON file.')
+
     # Optional output directory argument
-    parser.add_argument('-o', '--output_directory', default="refined_clusters", type=str, help='The output directory to save refined clusters JSON file.')
+    parser.add_argument('-o', '--output_directory', default="refined_clusters", type=str, help='The output directory for saving refined clusters JSON file.')
 
     # Optional iteration argument
     parser.add_argument('-it', '--iteration', default=0, type=int, help='Iteration number to append to the refined cluster file name.')
 
     args = parser.parse_args()
 
-    main(args.trident_directory, args.barcodes_tsv, args.initial_cluster_json, args.output_directory, args.iteration)
-
-
+    main(args.h5ad_file_path, args.barcodes_sample_200_tsv, args.initial_cluster_json, args.output_directory, args.iteration)
 
