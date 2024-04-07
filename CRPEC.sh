@@ -9,17 +9,20 @@
 
 
 # Generate a run ID based on the current date and time
+RUNS_DIR="./runs"
 RUN_ID="CRPEC_run_$(date +%Y%m%d_%H%M%S)"
 
 # Initialize directories for the new run
 bash initialize_directories.sh "${RUN_ID}"
 
 
+#python trident_preprocess_to_h5ad_barcodes.py -t <trident_directory> -hd <h5ad_directory> -bd <filtered_barcodes_directory>
+python trident_preprocess_to_h5ad_barcodes.py -t "input/GSM4909297" -hd "${RUNS_DIR}/${RUN_ID}" -bd "${RUNS_DIR}/${RUN_ID}"
+
 ## FUTURE USE CASE BE LIKE (given template_structure.yaml and initialize_directories.sh system)
 ## Variables for directory paths, assume $RUN_ID is already defined and directories are created
-#RUNS_DIR="./runs"
-#RUN_ID="CRPEC_run_$(date +%Y%m%d_%H%M%S)"
 #
+#RUN_ID="CRPEC_run_$(date +%Y%m%d_%H%M%S)"
 ## Directory paths based on the structure from template_structure.yaml
 #INITIAL_CLUSTERS_DIR="${RUNS_DIR}/${RUN_ID}/initial_clusters"
 #REFINED_CLUSTERS_DIR="${RUNS_DIR}/${RUN_ID}/refined_clusters"
