@@ -135,15 +135,14 @@ def refineClusters(adata, cluster_dictionary):
 
     
 
-def main(trident_directory, barcodes_tsv, initial_cluster_json, output_directory="refined_clusters", iteration=0):
+def main(h5ad_file_path, barcodes_sample_200_tsv, initial_cluster_json, output_directory="refined_clusters", iteration=0):
     # Assuming _adata_processing and refineClusters are defined elsewhere
-    matrix_file = _adata_processing.find_file(trident_directory, 'matrix.mtx.gz')
-    genes_file = _adata_processing.find_file(trident_directory, 'features.tsv.gz')
-    
-    adata = _adata_processing.read_mtx_to_adata(matrix_file=matrix_file, genes_file=genes_file, barcodes_file=barcodes_tsv)
+
+    adata_full = sc.read_h5ad(h5ad_file_path)
+    adata_200 = _adata_processing.subset_anndata_from_barcodes_file(adata_full, barcodes_sample_200_tsv)
     
     # REFINE CLUSTERS
-    refined_cluster = refineClusters(adata, initial_cluster_json)
+    refined_cluster = refineClusters(adata_200, initial_cluster_json)
 
     # Ensure the output directory exists
     os.makedirs(output_directory, exist_ok=True)
