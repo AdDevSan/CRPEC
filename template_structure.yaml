@@ -1,6 +1,5 @@
-run_id_placeholder:  # This will be replaced by the actual run ID
-  initial_clusters: null
-  refined_clusters: null
-  sample_200: null
-  sample_remainder: null
-  # Additional directories can be added here as needed
+run_id_placeholder:
+  initial_clusters: {}
+  refined_clusters: {}
+  sample_200: {}
+  sample_remainder: {}
