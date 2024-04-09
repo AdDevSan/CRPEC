@@ -12,15 +12,15 @@ def main(trident_directory, h5ad_directory, filtered_barcodes_directory):
     base_name = os.path.basename(trident_directory)
 
     # Write the processed AnnData object to the h5ad file
-    h5ad_file_path = os.path.join(h5ad_directory, f"full_dataset.h5ad")
+    h5ad_file_path = os.path.join(h5ad_directory, f"full_dataset_processed.h5ad")
     adata_processed.write(h5ad_file_path)
-
+    print(f"Processed H5AD file saved to: {h5ad_file_path}")
+    
     # Write the filtered barcodes to a TSV file
     filtered_barcodes_file_path = os.path.join(filtered_barcodes_directory, f"filtered_barcodes.tsv")
     adata_processed.obs.to_csv(filtered_barcodes_file_path, sep='\t', header=True, index=True)
-
-    print(f"Processed H5AD file saved to: {h5ad_file_path}")
     print(f"Filtered barcodes file saved to: {filtered_barcodes_file_path}")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Preprocess Trident data and output H5AD and barcodes TSV.")
