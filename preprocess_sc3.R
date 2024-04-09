@@ -21,10 +21,7 @@ input.barcodes.directory.path = "get from input"
 output.directory = "get from input"
 
 
-# temprorary
-input.h5seurat.file.path = "runs/archive/full_dataset.h5seurat"
-input.barcodes.directory.path = "runs/CRPEC_run_trial/sample_200"
-output.directory = "runs/CRPEC_run_trial/initial_clusters"
+
 
 
 h5seurat_preprocess_to_sce <- function(input.h5seurat.file.path){
@@ -50,8 +47,21 @@ subset_sce_by_sample_200 <- function(sce, sample_200_path) {
   return(sce_200)
 }
 
-library(SC3)
-library(jsonlite)
+
+
+create_json_object <- function(keys, values) {
+  # Ensure 'values' is treated as numeric
+  values_numeric <- as.numeric(as.character(values))
+  
+  # Create a named list where each key is associated with its value
+  json_list <- setNames(as.list(values_numeric), keys)
+  
+  # Convert the named list to a JSON object
+  json_output <- toJSON(json_list, pretty = TRUE, auto_unbox = TRUE)
+  
+  # Return the JSON output
+  return(json_output)
+}
 
 process_and_save_clusters <- function(asce, sample_200_path, output_directory) {
   # Read the barcodes
@@ -65,37 +75,40 @@ process_and_save_clusters <- function(asce, sample_200_path, output_directory) {
   
   # Retrieve the estimated k
   k_est <- metadata(asce_200)$sc3$k_est
-  cat(paste0("Estimated k: ", k_est))
+  cat(paste0("Estimated k: ", k_est, "\n"))
+  
   # Extract the clustering results
   cluster_col_name <- paste0("sc3_", k_est, "_clusters")
   clusters <- asce_200[[cluster_col_name]]
   
-  # Create a cluster dictionary
-  cluster_dict <- as.data.frame(cbind(colnames(asce_200), as.character(clusters)), 
-                                stringsAsFactors = FALSE)
-  names(cluster_dict) <- c("barcodes", "cluster")
+  json_output <- create_json_object(colnames(asce_200), as.numeric(as.character(clusters)))
   
-  # Define the output JSON filename
-  filename_prefix <- gsub("sample", "initial", basename(sample_200_path))
-  filename_prefix <- gsub(".tsv", "", filename_prefix)
-  output_filename <- file.path(output_directory, paste0(filename_prefix, ".json"))
+  #cat(json_output)
+  filename_prefix <- gsub("sample", "initial", tools::file_path_sans_ext(basename(sample_200_path)))
+  output_filename = file.path(output_directory, paste0(filename_prefix, ".json"))
+  write(json_output, output_filename)
   
-  # Write the cluster dictionary to a JSON file
-  write_json(as.list(cluster_dict), path = output_filename)
-  
+
   cat("Cluster dictionary saved as JSON: ", output_filename, "\n")
 }
 
 
-sce <- h5seurat_preprocess_to_sce(input.h5seurat.file.path = input.h5seurat.file.path)
-sce_200 <- subset_sce_by_sample_200(sce, sample_200_path = "runs/CRPEC_run_trial/sample_200/sample_200_1.tsv")
-process_and_save_clusters(sce_200, "runs/CRPEC_run_trial/sample_200/sample_200_1.tsv", output.directory)
+
+
 
 
 
 
 # Example usage:
 # asce <- Your code to generate the SingleCellExperiment object
+# temprorary
+input.h5seurat.file.path = "runs/archive/full_dataset.h5seurat"
+input.barcodes.directory.path = "runs/CRPEC_run_trial/sample_200"
+output.directory = "runs/CRPEC_run_trial/initial_clusters"
+
+
+
+asce <- h5seurat_preprocess_to_sce(input.h5seurat.file.path = input.h5seurat.file.path)
 input.barcodes.directory.path <- "runs/CRPEC_run_trial/sample_200"
 output.directory <- "runs/CRPEC_run_trial/initial_clusters"
 
