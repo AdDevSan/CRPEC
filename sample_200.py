@@ -19,7 +19,7 @@ def sample_and_output(barcodes_df, sample_size, output_dir_samples, output_dir_r
 
 def main(barcodes_file, n_samples, output_dir_samples, output_dir_remainders, sample_size=200):
     # Read the barcodes file
-    barcodes_df = pd.read_csv(barcodes_file, header=None, sep='\t')
+    barcodes_df = pd.read_csv(barcodes_file, header=0, sep='\t')
 
     for i in range(n_samples):
         sample_and_output(barcodes_df, sample_size, output_dir_samples, output_dir_remainders, i+1)
