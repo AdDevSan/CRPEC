@@ -5,6 +5,7 @@ import scanpy as sc
 from scipy.io import mmread
 import numpy as np
 import pickle
+import json
 def find_file(directory, file_suffix):
     """Find a file in a given directory with the specified suffix."""
     files = glob.glob(os.path.join(directory, f'*{file_suffix}'))
@@ -85,6 +86,21 @@ def subset_anndata_from_barcodes_file(adata, barcodes_tsv_path):
 
 
 
+def subset_anndata_from_cluster_dictionary(adata, cluster_json_path):
+    # Load the cluster dictionary from the JSON file
+    with open(cluster_json_path) as json_file:
+        cluster_dict = json.load(json_file)
+    
+    # Extract the barcodes (keys of the dictionary)
+    barcodes = list(cluster_dict.keys())
+    
+    # Subset the AnnData object to only include the cells with the barcodes from the cluster dictionary
+    adata_subset = adata[adata.obs.index.isin(barcodes)].copy()
+    
+    return adata_subset
+
+
+
 def preprocess_adata(adata):
     sc.pp.filter_cells(adata, min_genes=200)
     sc.pp.filter_genes(adata, min_cells=3)
@@ -93,3 +109,6 @@ def preprocess_adata(adata):
     sc.pp.highly_variable_genes(adata, min_mean=0.0125, max_mean=3, min_disp=0.5)
 
     return adata
+
+
+

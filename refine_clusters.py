@@ -153,28 +153,54 @@ def dir_exists(directory_path):
 
 
 
-def main(h5ad_file_path, barcodes_sample_200_tsv, initial_cluster_json, output_directory="refined_clusters", iteration=0):
+def main(h5ad_file_path, barcodes_sample_200_tsv, initial_cluster_json, output_directory="refined_clusters"):
 
 
     adata_full = sc.read_h5ad(h5ad_file_path)
     adata_200 = _adata_processing.subset_anndata_from_barcodes_file(adata_full, barcodes_sample_200_tsv)
     
+    #GET 1000 TOP GENES & PCA
+    sc.pp.highly_variable_genes(adata_200, n_top_genes=1000, subset=True)
+    sc.tl.pca(adata_200, svd_solver='arpack')
+    
     # REFINE CLUSTERS
     refined_cluster = refineClusters(adata_200, initial_cluster_json)
 
     # Ensure the output directory exists
-    os.makedirs(output_directory, exist_ok=True)
 
+    # Extract the basename and split it
+    initial_cluster_basename = os.path.basename(initial_cluster_json)
+    parts = initial_cluster_basename.split('_')
+    
+    # Replace the first element (prefix) with 'refined'
+    parts[0] = 'refined'
+    
+    # Construct the new filename
+    refined_filename = '_'.join(parts)
+    
+    # Construct the full file path for the output
+    file_path = os.path.join(output_directory, refined_filename)
 
-    file_path = os.path.join(output_directory, f"refined_cluster_{iteration}.json")
+    # Save the refined cluster data to the new file
     with open(file_path, 'w') as json_file:
         json.dump(refined_cluster, json_file, indent=4)
+    
+    # Provide feedback to the user or for logging
+    print(f"Refined cluster data saved to {file_path}")
+'''    os.makedirs(output_directory, exist_ok=True)
+
+
+    #TODO: change file_path to take initial_cluster_json and replace word before first _ to refined
+    #TODO: example: initial_200_1.json -> refined_200_1.json
+    file_path = os.path.join(output_directory, f"refined_cluster_{iteration}.json")
+    with open(file_path, 'w') as json_file:
+        json.dump(refined_cluster, json_file, indent=4)'''
 
 
 
 
 #EXAMPLE USE CASE: TAKES H5AD
-#python process_sc_data.py -f path/to/data.h5ad -b path/to/barcodes_sample_200.tsv -i path/to/initial_cluster.json -o path/to/output_directory -it 1
+#python refine_clusters.py -f path/to/data.h5ad -b path/to/barcodes_sample_200.tsv -i path/to/initial_cluster.json -o path/to/output_directory
 
 
 if __name__ == "__main__":
@@ -192,10 +218,7 @@ if __name__ == "__main__":
     # Optional output directory argument
     parser.add_argument('-o', '--output_directory', default="refined_clusters", type=str, help='The output directory for saving refined clusters JSON file.')
 
-    # Optional iteration argument
-    parser.add_argument('-it', '--iteration', default=0, type=int, help='Iteration number to append to the refined cluster file name.')
-
     args = parser.parse_args()
 
-    main(args.h5ad_file_path, args.barcodes_sample_200_tsv, args.initial_cluster_json, args.output_directory, args.iteration)
+    main(args.h5ad_file_path, args.barcodes_sample_200_tsv, args.initial_cluster_json, args.output_directory)
 

@@ -30,6 +30,7 @@ assay(asce, "logcounts") <- log_counts
 counts(asce) <- as.matrix(counts(asce))
 #counts(asce) <- as.matrix(counts(asce))
 logcounts(asce) <- as.matrix(logcounts(asce))
+
 sample.200.path = "runs/CRPEC_run_trial/sample_200/sample_200_1.tsv"
 barcodes_200 <- read.table(sample.200.path, header = FALSE)$V1
 asce_200 <- asce[, colnames(asce) %in% barcodes_200]
