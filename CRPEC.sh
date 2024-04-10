@@ -30,6 +30,17 @@ FILTERED_BARCODES="${SAMPLE_DIR}/filtered_barcodes.tsv"
 python3 sample_200.py -b "${FILTERED_BARCODES}" -n ${LOOP_RUNS} -s "${SAMPLE_DIR}/sample_200" -r "${SAMPLE_DIR}/sample_remainder"
 
 R preprocess_sc3.R
+
+INITIAL_CLUSTERS_DIR="${RUNS_DIR}/${SAMPLE_ID}/initial_clusters"
+REFINED_CLUSTERS_DIR="${RUNS_DIR}/${SAMPLE_ID}/refined_clusters"
+#BARCODES_SAMPLE_200_TSV="${RUNS_DIR}/${SAMPLE_ID}/sample_200/barcodes_sample_200.tsv"
+H5AD_FILE_PATH="${RUNS_DIR}/${SAMPLE_ID}/h5ad_file.h5ad" # Assuming this is the input file path
+
+
+# REFINE CLUSTERS refine_clusters.sh
+bash refine_clusters.sh "${H5AD_FILE_PATH}" "${INITIAL_CLUSTERS_DIR}" "${REFINED_CLUSTERS_DIR}"
+
+
 ## FUTURE USE CASE BE LIKE (given template_structure.yaml and initialize_directories.sh system)
 ## Variables for directory paths, assume $SAMPLE_ID is already defined and directories are created
 #
