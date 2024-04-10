@@ -153,16 +153,16 @@ def dir_exists(directory_path):
 
 
 
-def main(h5ad_file_path, barcodes_sample_200_tsv, initial_cluster_json, output_directory="refined_clusters"):
+def main(h5ad_file_path, initial_cluster_json, output_directory="refined_clusters"):
 
 
     adata_full = sc.read_h5ad(h5ad_file_path)
-    adata_200 = _adata_processing.subset_anndata_from_barcodes_file(adata_full, barcodes_sample_200_tsv)
+    adata_200 = _adata_processing.subset_anndata_from_cluster_dictionary(adata_full, initial_cluster_json)
     
     #GET 1000 TOP GENES & PCA
     sc.pp.highly_variable_genes(adata_200, n_top_genes=1000, subset=True)
     sc.tl.pca(adata_200, svd_solver='arpack')
-    
+
     # REFINE CLUSTERS
     refined_cluster = refineClusters(adata_200, initial_cluster_json)
 
@@ -209,8 +209,7 @@ if __name__ == "__main__":
     # H5AD file argument
     parser.add_argument('-f', '--h5ad_file_path', required=True, type=file_exists, help='Path to the .h5ad file.')
 
-    # Sampled barcodes TSV file argument
-    parser.add_argument('-b', '--barcodes_sample_200_tsv', required=True, type=file_exists, help='Path to the sampled barcodes .tsv file.')
+
 
     # Initial cluster JSON file argument
     parser.add_argument('-i', '--initial_cluster_json', required=True, type=file_exists, help='Path to the initial cluster JSON file.')
@@ -220,5 +219,5 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    main(args.h5ad_file_path, args.barcodes_sample_200_tsv, args.initial_cluster_json, args.output_directory)
+    main(args.h5ad_file_path, args.initial_cluster_json, args.output_directory)
 
