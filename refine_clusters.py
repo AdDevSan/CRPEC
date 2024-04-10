@@ -158,13 +158,15 @@ def main(h5ad_file_path, initial_cluster_json, output_directory="refined_cluster
 
     adata_full = sc.read_h5ad(h5ad_file_path)
     adata_200 = _adata_processing.subset_anndata_from_cluster_dictionary(adata_full, initial_cluster_json)
-    
+    with open(initial_cluster_json) as json_file:
+        initial_cluster_dict = json.load(json_file)
+
     #GET 1000 TOP GENES & PCA
     sc.pp.highly_variable_genes(adata_200, n_top_genes=1000, subset=True)
     sc.tl.pca(adata_200, svd_solver='arpack')
 
     # REFINE CLUSTERS
-    refined_cluster = refineClusters(adata_200, initial_cluster_json)
+    refined_cluster = refineClusters(adata_200, initial_cluster_dict)
 
     # Ensure the output directory exists
 
